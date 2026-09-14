@@ -27,7 +27,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 @keyframes hueR{0%{filter:hue-rotate(0deg)}100%{filter:hue-rotate(360deg)}}
 @keyframes hueRev{0%{filter:blur(5px) hue-rotate(360deg)}100%{filter:blur(5px) hue-rotate(0deg)}}
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
-@keyframes pulse-ring{0%{transform:scale(1);opacity:1}100%{transform:scale(1.6);opacity:0}}
 
 #nova-name{font-size:16px;font-weight:600;letter-spacing:-0.3px;color:var(--text)}
 #topbar-right{display:flex;gap:6px}
@@ -46,7 +45,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 #messages::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
 
 .msg-user{align-self:flex-end;background:var(--nova);color:white;border-radius:18px 18px 4px 18px;padding:10px 14px;max-width:78%;font-size:14px;line-height:1.5;word-break:break-word}
-.msg-user.voice-msg{border:2px solid rgba(255,255,255,0.4)}
 .msg-ai-row{align-self:flex-start;display:flex;gap:8px;max-width:88%;align-items:flex-start}
 .ai-av{width:28px;height:28px;flex-shrink:0;margin-top:2px;border-radius:50%;background:#cff1f4;display:flex;align-items:center;justify-content:center;overflow:hidden;animation:hueR 8s linear infinite}
 .ai-av .orb-inner{animation:hueRev 6s linear infinite}
@@ -55,16 +53,21 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .msg-ai-bubble code{background:var(--surface2);padding:1px 5px;border-radius:4px;font-family:monospace;font-size:12px}
 .msg-system{align-self:center;font-size:11px;color:var(--text3);background:var(--surface2);border-radius:20px;padding:4px 12px;border:0.5px solid var(--border)}
 
-.rating-row{display:flex;gap:6px;margin-top:6px;align-items:center}
+.rating-row{display:flex;align-items:center;gap:6px;margin-top:6px}
 .rate-btn{padding:3px 8px;font-size:11px;border-radius:12px;border:0.5px solid var(--border2);background:transparent;cursor:pointer;color:var(--text2);transition:all 0.15s}
 .rate-btn:hover{background:var(--surface2)}
 .rate-btn.good:hover{background:var(--success-light);color:#15803d;border-color:#86efac}
 .rate-btn.bad:hover{background:var(--danger-light);color:#b91c1c;border-color:#fca5a5}
 .rate-btn.rated-good{background:var(--success-light);color:#15803d;border-color:#86efac}
 .rate-btn.rated-bad{background:var(--danger-light);color:#b91c1c;border-color:#fca5a5}
-.speak-btn{padding:3px 8px;font-size:11px;border-radius:12px;border:0.5px solid var(--border2);background:transparent;cursor:pointer;color:var(--text2);transition:all 0.15s;display:flex;align-items:center;gap:4px}
-.speak-btn:hover{background:var(--accent-light);color:var(--accent);border-color:#7dd3fc}
-.speak-btn.speaking{background:var(--accent-light);color:var(--accent);border-color:#7dd3fc}
+
+/* Bouton lire la réponse */
+.tts-btn{width:26px;height:26px;border-radius:50%;border:none;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text3);transition:all 0.15s;margin-left:auto;flex-shrink:0}
+.tts-btn:hover{color:var(--nova);background:var(--nova-light)}
+.tts-btn svg{width:13px;height:13px}
+.tts-btn.speaking{color:var(--nova);background:var(--nova-light)}
+.tts-btn.speaking svg{animation:ttsAnim 0.8s ease-in-out infinite alternate}
+@keyframes ttsAnim{0%{transform:scale(0.85);opacity:0.6}100%{transform:scale(1.1);opacity:1}}
 
 @keyframes dot{0%,100%{opacity:0.3}50%{opacity:1}}
 .typing-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--text3);animation:dot 1.2s infinite;margin:0 2px}
@@ -78,38 +81,34 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .pill:hover{background:var(--nova-light);border-color:#c4b5fd;color:#6d28d9}
 
 #inputbar{background:var(--surface);border-top:0.5px solid var(--border);padding:10px 12px 12px;flex-shrink:0}
+#voice-status{font-size:11px;color:var(--danger);text-align:center;min-height:16px;margin-bottom:4px;font-weight:500;letter-spacing:0.2px}
 #input-wrap{background:var(--surface);border:0.5px solid var(--border2);border-radius:20px;overflow:hidden;transition:border-color 0.15s}
 #input-wrap:focus-within{border-color:var(--nova-mid)}
-#input-wrap.recording{border-color:var(--danger);box-shadow:0 0 0 2px rgba(239,68,68,0.15)}
+#input-wrap.recording{border-color:var(--danger);box-shadow:0 0 0 3px rgba(239,68,68,0.15)}
 #msg-input{width:100%;padding:10px 14px 4px;border:none;outline:none;background:transparent;font-size:14px;color:var(--text);resize:none;max-height:100px;overflow-y:auto;font-family:inherit;line-height:1.5}
 #msg-input::placeholder{color:var(--text3)}
 #bar-actions{display:flex;align-items:center;gap:4px;padding:4px 8px 8px}
-.sm-btn{width:30px;height:30px;border-radius:50%;border:none;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text2);transition:background 0.15s}
+.sm-btn{width:30px;height:30px;border-radius:50%;border:none;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text2);transition:all 0.15s;position:relative}
 .sm-btn:hover{background:var(--surface2)}
 .sm-btn svg{width:15px;height:15px}
 #send-btn{width:30px;height:30px;border-radius:50%;border:none;cursor:pointer;overflow:hidden;margin-left:auto;display:flex;align-items:center;justify-content:center;transition:opacity 0.15s;flex-shrink:0}
 #send-btn:disabled{opacity:0.4;cursor:not-allowed}
 
-/* Bouton micro amélioré */
-#mic-btn{position:relative;width:30px;height:30px;border-radius:50%;border:none;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text2);transition:all 0.2s}
-#mic-btn svg{width:15px;height:15px;position:relative;z-index:1}
-#mic-btn.listening{color:var(--danger);background:var(--danger-light)}
-#mic-btn.listening::before{content:'';position:absolute;inset:0;border-radius:50%;border:2px solid var(--danger);animation:pulse-ring 1.2s ease-out infinite}
-#mic-btn:not(.listening):hover{background:var(--surface2)}
-
-/* Indicateur vocal */
-#voice-indicator{display:none;align-self:center;background:var(--danger-light);border:0.5px solid #fca5a5;border-radius:20px;padding:6px 14px;font-size:12px;color:#b91c1c;gap:8px;align-items:center}
-#voice-indicator.show{display:flex}
-#voice-indicator .dots{display:flex;gap:3px;align-items:center}
-#voice-indicator .dots span{width:4px;height:4px;border-radius:50%;background:#ef4444;animation:dot 1s infinite}
-#voice-indicator .dots span:nth-child(2){animation-delay:0.15s}
-#voice-indicator .dots span:nth-child(3){animation-delay:0.3s}
+/* Bouton micro actif */
+#mic-btn.active{color:var(--danger);background:var(--danger-light)}
+#mic-btn.active svg{animation:micPulse 1s ease-in-out infinite}
+#mic-btn.active::before{content:'';position:absolute;inset:-3px;border-radius:50%;border:2px solid var(--danger);animation:ripple 1.2s ease-out infinite}
+@keyframes micPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.2)}}
+@keyframes ripple{0%{opacity:0.7;transform:scale(1)}100%{opacity:0;transform:scale(1.9)}}
 
 .overlay{display:none;position:absolute;inset:0;background:rgba(0,0,0,0.4);z-index:50;align-items:center;justify-content:center}
 .overlay.active{display:flex}
 .modal{background:var(--surface);border-radius:16px;padding:24px;width:340px;max-width:90%;border:0.5px solid var(--border2)}
 .modal-title{font-size:16px;font-weight:600;margin-bottom:4px}
 .modal-sub{font-size:12px;color:var(--text2);margin-bottom:16px;line-height:1.4}
+.field-label{font-size:12px;color:var(--text2);margin-bottom:4px;display:block;font-weight:500}
+.modal input{width:100%;padding:9px 12px;border:0.5px solid var(--border2);border-radius:var(--radius-sm);font-size:14px;color:var(--text);background:var(--surface2);outline:none;font-family:inherit;margin-bottom:12px}
+.modal input:focus{border-color:var(--nova-mid)}
 .modal-actions{display:flex;gap:8px;margin-top:4px}
 .btn-primary{flex:1;padding:9px;border-radius:var(--radius-sm);border:none;background:var(--nova);color:white;font-size:14px;font-weight:500;cursor:pointer;transition:background 0.15s}
 .btn-primary:hover{background:var(--nova-mid)}
@@ -140,7 +139,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <span id="nova-name">Nova</span>
   </div>
   <div id="topbar-right">
-    <button class="icon-btn" onclick="showStats()" title="Stats">
+    <button class="icon-btn" onclick="showStats()" title="Stats d'apprentissage">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
     </button>
     <button class="icon-btn" onclick="resetChat()" title="Nouvelle conversation">
@@ -158,7 +157,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <div id="stats-bar" style="display:none">
   <div class="stat">Échanges <span class="stat-val" id="s-turns">0</span></div>
   <div class="stat">Corrections <span class="stat-val" id="s-corrections">0</span></div>
-  <div class="stat">Score <span class="stat-val" id="s-score">—</span></div>
+  <div class="stat">Score qualité <span class="stat-val" id="s-score">—</span></div>
   <div class="stat">Mémoire <span class="stat-val" id="s-mem">0 faits</span></div>
 </div>
 
@@ -174,7 +173,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <div class="orb-shine"></div>
     </div>
     <div class="w-title">Bonjour, je suis Nova</div>
-    <div class="w-sub">Parlez ou écrivez. Je vous réponds à voix haute dans votre langue 🎙️</div>
+    <div class="w-sub">Connectée à OpenRouter. Je mémorise et j'apprends de vos retours.<br><br>🎤 Appuyez sur le micro pour parler !</div>
     <div class="pills-grid">
       <span class="pill" onclick="quickSend('Qui es-tu ?')">Qui es-tu ?</span>
       <span class="pill" onclick="quickSend('Comment tu apprends ?')">Comment tu apprends ?</span>
@@ -182,19 +181,23 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <span class="pill" onclick="quickSend('Écris un poème')">Poème</span>
     </div>
   </div>
-  <div id="voice-indicator">
-    <div class="dots"><span></span><span></span><span></span></div>
-    <span id="voice-interim">En écoute…</span>
-    <button onclick="stopRecognition()" style="margin-left:4px;padding:2px 8px;border-radius:10px;border:0.5px solid #fca5a5;background:transparent;color:#b91c1c;font-size:11px;cursor:pointer">Arrêter</button>
-  </div>
 </div>
 
 <div id="inputbar">
+  <div id="voice-status"></div>
   <div id="input-wrap">
-    <textarea id="msg-input" rows="1" placeholder="Parlez ou écrivez à Nova…"></textarea>
+    <textarea id="msg-input" rows="1" placeholder="Écrivez ou appuyez sur 🎤…"></textarea>
     <div id="bar-actions">
-      <button id="mic-btn" title="Parler à Nova" onclick="toggleRecognition()">
-        <svg id="mic-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+      <!-- Bouton microphone vocal -->
+      <button class="sm-btn" id="mic-btn" title="Parler à Nova" onclick="toggleVoice()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
+          <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+          <line x1="12" x2="12" y1="19" y2="22"/>
+        </svg>
+      </button>
+      <button class="sm-btn" title="Joindre">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
       </button>
       <button id="send-btn" disabled title="Envoyer" onclick="submitMsg()">
         <div style="width:30px;height:30px;border-radius:50%;background:#cff1f4;display:flex;align-items:center;justify-content:center;overflow:hidden;animation:hueR 8s linear infinite">
@@ -228,8 +231,7 @@ const welcomeEl = document.getElementById('welcome-screen');
 const brainStatus = document.getElementById('brain-status');
 const brainFill = document.getElementById('brain-fill');
 const micBtn = document.getElementById('mic-btn');
-const voiceIndicator = document.getElementById('voice-indicator');
-const voiceInterim = document.getElementById('voice-interim');
+const voiceStatus = document.getElementById('voice-status');
 const inputWrap = document.getElementById('input-wrap');
 
 let state = {
@@ -243,31 +245,28 @@ let state = {
   loading: false
 };
 
-/* ─── RECONNAISSANCE VOCALE ─── */
+// ─── RECONNAISSANCE VOCALE ───────────────────────────────────────────────────
 let recognition = null;
 let isListening = false;
-let currentSpeech = null;
+let currentSpeech = null; // utterance en cours
 
 function initRecognition() {
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SR) {
-    addSystemMsg('⚠️ La reconnaissance vocale n\'est pas supportée sur ce navigateur. Essayez Chrome.');
-    return null;
-  }
-  const r = new SR();
-  r.continuous = false;
-  r.interimResults = true;
-  r.maxAlternatives = 1;
-  // Langue auto selon le navigateur, avec fallback français
-  r.lang = navigator.language || 'fr-FR';
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) return null;
+
+  const r = new SpeechRecognition();
+  r.continuous = false;       // s'arrête après une phrase
+  r.interimResults = true;    // résultats en temps réel
+  r.lang = 'fr-FR';           // commence en français, détecté automatiquement
 
   r.onstart = () => {
     isListening = true;
-    micBtn.classList.add('listening');
+    micBtn.classList.add('active');
     inputWrap.classList.add('recording');
-    voiceIndicator.classList.add('show');
-    voiceInterim.textContent = 'En écoute…';
-    brainStatus.textContent = '🎙️ Je vous écoute…';
+    voiceStatus.textContent = '🎤 Je vous écoute…';
+    // Vider le champ pendant l'écoute
+    inputEl.value = '';
+    sendBtn.disabled = true;
   };
 
   r.onresult = (e) => {
@@ -278,170 +277,149 @@ function initRecognition() {
       if (e.results[i].isFinal) final += t;
       else interim += t;
     }
-    // Afficher le texte interim en direct dans le champ
-    if (interim) {
-      inputEl.value = interim;
-      voiceInterim.textContent = interim;
-      sendBtn.disabled = false;
-    }
-    if (final) {
-      inputEl.value = final;
-      voiceInterim.textContent = final;
-      sendBtn.disabled = false;
-    }
-  };
-
-  r.onspeechend = () => { r.stop(); };
-
-  r.onend = () => {
-    isListening = false;
-    micBtn.classList.remove('listening');
-    inputWrap.classList.remove('recording');
-    voiceIndicator.classList.remove('show');
-    brainStatus.textContent = state.memory.length > 0
-      ? `Mémoire chargée — ${state.memory.length} fait(s)`
-      : 'Nova prête — Llama 2 7B';
-    // Si du texte a été capturé, envoyer automatiquement
-    const text = inputEl.value.trim();
-    if (text && !state.loading) {
-      setTimeout(() => submitMsg(true), 300);
-    }
+    // Afficher en temps réel dans le champ
+    inputEl.value = final || interim;
+    inputEl.style.height = 'auto';
+    inputEl.style.height = Math.min(inputEl.scrollHeight, 100) + 'px';
+    if (final) voiceStatus.textContent = '✓ Parole reconnue';
   };
 
   r.onerror = (e) => {
     isListening = false;
-    micBtn.classList.remove('listening');
+    micBtn.classList.remove('active');
     inputWrap.classList.remove('recording');
-    voiceIndicator.classList.remove('show');
     if (e.error === 'not-allowed') {
-      addSystemMsg('❌ Accès au microphone refusé. Autorisez le micro dans les paramètres du navigateur.');
-    } else if (e.error !== 'no-speech' && e.error !== 'aborted') {
-      addSystemMsg('⚠️ Erreur micro : ' + e.error);
+      voiceStatus.textContent = '❌ Microphone refusé — autorisez-le dans les paramètres';
+    } else if (e.error === 'no-speech') {
+      voiceStatus.textContent = '🔇 Aucune parole détectée';
+    } else {
+      voiceStatus.textContent = '⚠️ Erreur microphone : ' + e.error;
     }
-    brainStatus.textContent = 'Nova prête';
+    setTimeout(() => { voiceStatus.textContent = ''; }, 3000);
+  };
+
+  r.onend = () => {
+    isListening = false;
+    micBtn.classList.remove('active');
+    inputWrap.classList.remove('recording');
+    const txt = inputEl.value.trim();
+    if (txt) {
+      voiceStatus.textContent = '';
+      sendBtn.disabled = false;
+      // Envoyer automatiquement après la reconnaissance
+      setTimeout(() => submitMsg(), 300);
+    } else {
+      voiceStatus.textContent = '';
+    }
   };
 
   return r;
 }
 
-function toggleRecognition() {
-  if (isListening) {
-    stopRecognition();
-  } else {
-    startRecognition();
+function toggleVoice() {
+  // Couper la synthèse vocale si elle parle
+  if (window.speechSynthesis && window.speechSynthesis.speaking) {
+    window.speechSynthesis.cancel();
   }
-}
 
-function startRecognition() {
-  // Arrêter toute synthèse en cours
-  if (window.speechSynthesis) window.speechSynthesis.cancel();
-  
-  if (!recognition) recognition = initRecognition();
-  if (!recognition) return;
+  if (isListening) {
+    // Arrêter l'écoute
+    recognition.stop();
+    return;
+  }
+
+  // Initialiser si pas encore fait
+  if (!recognition) {
+    recognition = initRecognition();
+  }
+
+  if (!recognition) {
+    voiceStatus.textContent = '❌ Reconnaissance vocale non supportée sur ce navigateur';
+    setTimeout(() => { voiceStatus.textContent = ''; }, 3000);
+    return;
+  }
+
   try {
     recognition.start();
   } catch(e) {
-    // Si déjà démarré, recréer
-    recognition = initRecognition();
-    recognition && recognition.start();
-  }
-}
-
-function stopRecognition() {
-  if (recognition && isListening) {
+    // Si déjà démarré, relancer
     recognition.stop();
+    setTimeout(() => {
+      try { recognition.start(); } catch(e2) {}
+    }, 300);
   }
 }
 
-/* ─── SYNTHÈSE VOCALE ─── */
-function detectLang(text) {
-  // Détection simple de la langue pour la synthèse
-  const frWords = /\b(le|la|les|un|une|des|je|tu|il|nous|vous|ils|est|sont|être|avoir|et|ou|mais|donc|or|ni|car|que|qui|quoi|ce|cet|cette|ces|mon|ton|son|ma|ta|sa|mes|tes|ses|notre|votre|leur|leurs|du|au|aux|en|dans|sur|sous|avec|pour|par|sans|de|à)\b/gi;
-  const enWords = /\b(the|a|an|is|are|was|were|be|been|being|have|has|had|do|does|did|will|would|could|should|may|might|shall|can|i|you|he|she|it|we|they|and|or|but|in|on|at|to|for|of|with|by|from)\b/gi;
-  
-  const frCount = (text.match(frWords) || []).length;
-  const enCount = (text.match(enWords) || []).length;
-  
-  if (frCount > enCount * 1.5) return 'fr-FR';
-  if (enCount > frCount * 1.5) return 'en-US';
-  // Heuristiques supplémentaires
-  if (/[àâäéèêëîïôùûüç]/i.test(text)) return 'fr-FR';
-  if (/\b(hola|como|que|para|por|una|uno|con|del)\b/i.test(text)) return 'es-ES';
-  if (/\b(ich|du|er|sie|wir|ihr|und|ist|war|haben|werden)\b/i.test(text)) return 'de-DE';
-  return navigator.language || 'fr-FR';
-}
+// ─── SYNTHÈSE VOCALE (TTS) ────────────────────────────────────────────────────
+function speakText(text, btn) {
+  if (!window.speechSynthesis) return;
 
-function speakText(text, btnEl) {
-  if (!window.speechSynthesis) {
-    addSystemMsg('⚠️ La synthèse vocale n\'est pas supportée.');
-    return;
-  }
-  
-  // Si déjà en train de parler ce texte, arrêter
-  if (btnEl && btnEl.classList.contains('speaking')) {
+  // Si déjà en train de parler, arrêter
+  if (window.speechSynthesis.speaking) {
     window.speechSynthesis.cancel();
-    btnEl.innerHTML = '🔊 Écouter';
-    btnEl.classList.remove('speaking');
-    return;
+    document.querySelectorAll('.tts-btn.speaking').forEach(b => b.classList.remove('speaking'));
+    if (btn && btn.dataset.speaking === '1') {
+      btn.dataset.speaking = '0';
+      return;
+    }
   }
-  
-  // Arrêter toute lecture en cours
-  window.speechSynthesis.cancel();
-  document.querySelectorAll('.speak-btn.speaking').forEach(b => {
-    b.innerHTML = '🔊 Écouter';
-    b.classList.remove('speaking');
-  });
-  
-  // Nettoyer le texte (retirer markdown basique)
+
+  // Nettoyer le texte (enlever les balises markdown basiques)
   const clean = text
     .replace(/\*\*([^*]+)\*\*/g, '$1')
     .replace(/`([^`]+)`/g, '$1')
     .replace(/<[^>]+>/g, '')
     .trim();
-  
+
+  // Détecter la langue du texte
   const lang = detectLang(clean);
+
   const utter = new SpeechSynthesisUtterance(clean);
   utter.lang = lang;
   utter.rate = 1.0;
-  utter.pitch = 1.0;
+  utter.pitch = 1.05;
   utter.volume = 1.0;
-  
+
   // Choisir une voix adaptée à la langue
   const voices = window.speechSynthesis.getVoices();
-  const match = voices.find(v => v.lang.startsWith(lang.split('-')[0]) && !v.name.includes('eSpeak'));
-  if (match) utter.voice = match;
-  
-  if (btnEl) {
-    btnEl.innerHTML = '⏹ Arrêter';
-    btnEl.classList.add('speaking');
-    brainStatus.textContent = '🔊 Nova parle…';
+  const voice = voices.find(v => v.lang.startsWith(lang.split('-')[0]) && !v.name.includes('Google')) ||
+                voices.find(v => v.lang.startsWith(lang.split('-')[0])) ||
+                null;
+  if (voice) utter.voice = voice;
+
+  if (btn) {
+    btn.classList.add('speaking');
+    btn.dataset.speaking = '1';
   }
-  
+
   utter.onend = () => {
-    if (btnEl) {
-      btnEl.innerHTML = '🔊 Écouter';
-      btnEl.classList.remove('speaking');
-    }
-    brainStatus.textContent = state.memory.length > 0
-      ? `Mémoire chargée — ${state.memory.length} fait(s)`
-      : 'Nova prête';
+    if (btn) { btn.classList.remove('speaking'); btn.dataset.speaking = '0'; }
   };
-  
   utter.onerror = () => {
-    if (btnEl) { btnEl.innerHTML = '🔊 Écouter'; btnEl.classList.remove('speaking'); }
+    if (btn) { btn.classList.remove('speaking'); btn.dataset.speaking = '0'; }
   };
-  
+
   window.speechSynthesis.speak(utter);
-  currentSpeech = utter;
 }
 
-// Précharger les voix (nécessaire sur certains navigateurs)
+function detectLang(text) {
+  // Heuristique simple : mots fréquents par langue
+  const fr = (text.match(/\b(je|tu|il|nous|vous|ils|le|la|les|de|du|des|est|sont|et|en|un|une|pour|avec|sur|par|mais|ou|donc|ni|car|que|qui|ce|se|au|aux)\b/gi) || []).length;
+  const en = (text.match(/\b(the|is|are|was|were|be|been|have|has|had|do|does|did|will|would|could|should|may|might|must|shall|can|a|an|and|or|but|in|on|at|to|of|for|with|by|from|this|that|these|those|it|its)\b/gi) || []).length;
+  const es = (text.match(/\b(el|la|los|las|es|son|yo|tú|él|ella|nosotros|vosotros|ellos|de|del|al|un|una|unos|unas|y|o|pero|para|con|en|por|que|se|su|sus)\b/gi) || []).length;
+
+  if (es > fr && es > en) return 'es-ES';
+  if (en > fr) return 'en-US';
+  return 'fr-FR';
+}
+
+// Charger les voix dès que possible
 if (window.speechSynthesis) {
   window.speechSynthesis.getVoices();
-  window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+  window.speechSynthesis.onvoiceschanged = () => { window.speechSynthesis.getVoices(); };
 }
 
-/* ─── ÉTAT & PERSISTENCE ─── */
+// ─── ÉTAT & PERSISTANCE ───────────────────────────────────────────────────────
 function loadState() {
   try {
     const s = localStorage.getItem('nova_state');
@@ -467,7 +445,7 @@ function saveState() {
   } catch(e){}
 }
 
-/* ─── INPUT ─── */
+// ─── INPUT ────────────────────────────────────────────────────────────────────
 inputEl.addEventListener('input', () => {
   sendBtn.disabled = inputEl.value.trim() === '' || state.loading;
   inputEl.style.height = 'auto';
@@ -478,7 +456,7 @@ inputEl.addEventListener('keydown', e => {
   if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); if (!sendBtn.disabled) submitMsg(); }
 });
 
-/* ─── SYSTÈME ─── */
+// ─── PROMPT SYSTÈME ──────────────────────────────────────────────────────────
 function novaSystemPrompt() {
   const memStr = state.memory.length > 0
     ? '\n\nMÉMOIRE (faits appris) :\n' + state.memory.map(m => '- ' + m).join('\n')
@@ -489,41 +467,62 @@ function novaSystemPrompt() {
   return `Tu es Nova, une IA intelligente et bienveillante. Tu apprends de chaque conversation et mémorises les préférences et infos importantes. Reconnais tes erreurs et indique que tu as appris.
 
 PRINCIPES :
-- Réponds dans la même langue que le message reçu
+- Réponds dans la même langue que l'utilisateur
 - Sois concise mais complète
 - Mémorise les infos pertinentes${memStr}${corrStr}`;
 }
 
+// ─── API OPENROUTER ───────────────────────────────────────────────────────────
 async function callOpenRouter(messages) {
   if (!state.openrouterKey || state.openrouterKey.length < 10) {
-    const newKey = prompt('Clé API OpenRouter requise (sk-or-v1-...) :');
+    const newKey = prompt('Clé API OpenRouter invalide. Entrez votre clé (sk-or-v1-...) :');
     if (!newKey) return { ok: false, text: 'Clé API requise pour continuer.' };
     state.openrouterKey = newKey;
     return callOpenRouter(messages);
   }
+
   try {
     const sysMsg = { role: 'system', content: novaSystemPrompt() };
     const allMessages = [sysMsg, ...messages.map(m => ({ role: m.role, content: m.content }))];
-    const payload = { model: 'openrouter/free', messages: allMessages, temperature: 0.7, max_tokens: 1000 };
+
+    const payload = {
+      model: 'openrouter/free',
+      messages: allMessages,
+      temperature: 0.7,
+      max_tokens: 1000
+    };
+
     const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
-      headers: { 'Authorization': 'Bearer ' + state.openrouterKey, 'Content-Type': 'application/json', 'HTTP-Referer': window.location.href },
+      headers: {
+        'Authorization': 'Bearer ' + state.openrouterKey,
+        'Content-Type': 'application/json',
+        'HTTP-Referer': window.location.href
+      },
       body: JSON.stringify(payload)
     });
+
     const data = await res.json();
+
     if (data.error) {
-      if (data.error.message && data.error.message.includes('auth'))
+      if (data.error.message && data.error.message.includes('auth')) {
         return { ok: false, text: '❌ Clé API invalide.' };
-      return { ok: false, text: 'Erreur : ' + (data.error.message || 'Erreur inconnue') };
+      }
+      return { ok: false, text: 'Erreur: ' + (data.error.message || 'Erreur inconnue') };
     }
-    if (!data.choices || !data.choices[0]) return { ok: false, text: 'Pas de réponse reçue.' };
-    return { ok: true, text: data.choices[0].message.content };
+
+    if (!data.choices || !data.choices[0]) {
+      return { ok: false, text: 'Pas de réponse reçue de OpenRouter.' };
+    }
+
+    const text = data.choices[0].message.content;
+    return { ok: true, text };
   } catch(e) {
     return { ok: false, text: '⚠️ Erreur réseau. Vérifiez votre connexion.' };
   }
 }
 
-/* ─── MESSAGES ─── */
+// ─── MESSAGES ─────────────────────────────────────────────────────────────────
 function makeOrbAvatar() {
   const d = document.createElement('div');
   d.className = 'ai-av';
@@ -531,48 +530,58 @@ function makeOrbAvatar() {
   return d;
 }
 
-function addUserMsg(text, fromVoice) {
+function addUserMsg(text) {
   welcomeEl.style.display = 'none';
   const el = document.createElement('div');
-  el.className = 'msg-user' + (fromVoice ? ' voice-msg' : '');
-  el.innerHTML = (fromVoice ? '<span style="font-size:10px;opacity:0.7;display:block;margin-bottom:2px">🎙️ vocal</span>' : '') + escapeHtml(text);
-  // Insérer avant l'indicateur vocal
-  msgEl.insertBefore(el, voiceIndicator);
+  el.className = 'msg-user';
+  el.textContent = text;
+  msgEl.appendChild(el);
   msgEl.scrollTop = msgEl.scrollHeight;
 }
 
-function addAIMsg(text, autoSpeak) {
+function addAIMsg(text) {
   const row = document.createElement('div');
   row.className = 'msg-ai-row';
   row.appendChild(makeOrbAvatar());
+
   const bubble = document.createElement('div');
   bubble.className = 'msg-ai-bubble';
-  bubble.innerHTML = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/`([^`]+)`/g,'<code>$1</code>').replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>');
+  bubble.innerHTML = text
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/`([^`]+)`/g,'<code>$1</code>')
+    .replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>')
+    .replace(/\n/g,'<br>');
+
   const wrap = document.createElement('div');
-  wrap.style.cssText = 'display:flex;flex-direction:column;gap:4px';
+  wrap.style.cssText = 'display:flex;flex-direction:column;gap:4px;flex:1;min-width:0';
   wrap.appendChild(bubble);
+
+  // Barre du bas : 👍 👎 + bouton haut-parleur
   const rr = document.createElement('div');
   rr.className = 'rating-row';
-  // Bouton écouter + boutons notation
-  const speakBtnEl = document.createElement('button');
-  speakBtnEl.className = 'speak-btn';
-  speakBtnEl.innerHTML = '🔊 Écouter';
-  speakBtnEl.onclick = () => speakText(text, speakBtnEl);
-  rr.appendChild(speakBtnEl);
-  rr.innerHTML += `<button class="rate-btn good" onclick="rateMsg(this,'good')">👍</button><button class="rate-btn bad" onclick="rateMsg(this,'bad')">👎</button>`;
-  rr.insertBefore(speakBtnEl, rr.firstChild);
-  wrap.appendChild(rr);
-  row.appendChild(wrap);
-  msgEl.insertBefore(row, voiceIndicator);
-  msgEl.scrollTop = msgEl.scrollHeight;
-  
-  // Lecture auto si la question venait de la voix
-  if (autoSpeak) {
-    setTimeout(() => speakText(text, speakBtnEl), 400);
-  }
-}
 
-function escapeHtml(t) { return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  const ttsBtn = document.createElement('button');
+  ttsBtn.className = 'tts-btn';
+  ttsBtn.title = 'Lire à voix haute';
+  ttsBtn.dataset.speaking = '0';
+  ttsBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+    <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
+    <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
+  </svg>`;
+  ttsBtn.onclick = () => speakText(text, ttsBtn);
+
+  rr.innerHTML = `<button class="rate-btn good" onclick="rateMsg(this,'good')">👍</button><button class="rate-btn bad" onclick="rateMsg(this,'bad')">👎</button>`;
+  rr.appendChild(ttsBtn);
+  wrap.appendChild(rr);
+
+  row.appendChild(wrap);
+  msgEl.appendChild(row);
+  msgEl.scrollTop = msgEl.scrollHeight;
+
+  // Lire automatiquement la réponse de Nova
+  setTimeout(() => speakText(text, ttsBtn), 200);
+}
 
 function addTyping() {
   const row = document.createElement('div');
@@ -583,7 +592,7 @@ function addTyping() {
   bubble.className = 'msg-ai-bubble';
   bubble.innerHTML = '<span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span>';
   row.appendChild(bubble);
-  msgEl.insertBefore(row, voiceIndicator);
+  msgEl.appendChild(row);
   msgEl.scrollTop = msgEl.scrollHeight;
 }
 
@@ -593,11 +602,11 @@ function addSystemMsg(text) {
   const el = document.createElement('div');
   el.className = 'msg-system';
   el.textContent = text;
-  msgEl.insertBefore(el, voiceIndicator);
+  msgEl.appendChild(el);
   msgEl.scrollTop = msgEl.scrollHeight;
 }
 
-/* ─── NOTATION ─── */
+// ─── NOTATION ────────────────────────────────────────────────────────────────
 function rateMsg(btn, type) {
   const rr = btn.closest('.rating-row');
   if (rr.dataset.rated) return;
@@ -645,6 +654,7 @@ function addCorrectionFlow(rr) {
   wrap.appendChild(corrDiv);
 }
 
+// ─── MÉMOIRE ─────────────────────────────────────────────────────────────────
 async function extractMemory(userMsg) {
   if (/je m'appelle|mon nom est|j'aime|j'adore|je préfère|mon favori/i.test(userMsg)) {
     const fact = 'Utilisateur : ' + userMsg.slice(0,80);
@@ -669,62 +679,6 @@ function updateStats() {
   document.getElementById('s-mem').textContent = state.memory.length + ' faits';
 }
 
-/* ─── ENVOI ─── */
-async function submitMsg(fromVoice) {
-  const text = inputEl.value.trim();
-  if (!text || state.loading) return;
-
-  state.loading = true;
-  sendBtn.disabled = true;
-  inputEl.value = '';
-  inputEl.style.height = 'auto';
-
-  addUserMsg(text, fromVoice);
-  state.history.push({ role: 'user', content: text });
-  state.turns++;
-  addTyping();
-  brainStatus.textContent = 'Nova réfléchit…';
-
-  const result = await callOpenRouter(state.history);
-  removeTyping();
-
-  if (result.ok) {
-    addAIMsg(result.text, !!fromVoice); // lecture auto si question vocale
-    state.history.push({ role: 'assistant', content: result.text });
-    if (state.history.length > 20) state.history.splice(0, 2);
-    extractMemory(text);
-  } else {
-    addSystemMsg(result.text);
-    state.history.pop();
-  }
-
-  updateBrain();
-  updateStats();
-  state.loading = false;
-  sendBtn.disabled = inputEl.value.trim() === '';
-  msgEl.scrollTop = msgEl.scrollHeight;
-}
-
-function quickSend(t) { inputEl.value = t; sendBtn.disabled = false; submitMsg(); }
-
-function resetChat() {
-  if (window.speechSynthesis) window.speechSynthesis.cancel();
-  state.history = [];
-  state.turns = 0;
-  // Reconstruire le DOM messages
-  while (msgEl.firstChild) msgEl.removeChild(msgEl.firstChild);
-  msgEl.appendChild(welcomeEl);
-  msgEl.appendChild(voiceIndicator);
-  welcomeEl.style.display = 'flex';
-  inputEl.value = '';
-  inputEl.style.height = 'auto';
-  sendBtn.disabled = true;
-  updateStats();
-  brainStatus.textContent = state.memory.length > 0
-    ? `Mémoire chargée — ${state.memory.length} fait(s)`
-    : 'Nova prête — Llama 2 7B';
-}
-
 function showStats() {
   const score = state.totalRatings > 0 ? Math.round(state.goodRatings / state.totalRatings * 100) + '%' : 'N/A';
   document.getElementById('stats-detail').innerHTML = `
@@ -740,6 +694,68 @@ function showStats() {
 }
 
 function closeStats() { document.getElementById('stats-overlay').classList.remove('active'); }
+
+// ─── ENVOI ────────────────────────────────────────────────────────────────────
+async function submitMsg() {
+  const text = inputEl.value.trim();
+  if (!text || state.loading) return;
+
+  // Arrêter TTS si en cours
+  if (window.speechSynthesis && window.speechSynthesis.speaking) {
+    window.speechSynthesis.cancel();
+    document.querySelectorAll('.tts-btn.speaking').forEach(b => { b.classList.remove('speaking'); b.dataset.speaking='0'; });
+  }
+
+  state.loading = true;
+  sendBtn.disabled = true;
+  inputEl.value = '';
+  inputEl.style.height = 'auto';
+
+  addUserMsg(text);
+  state.history.push({ role: 'user', content: text });
+  state.turns++;
+  addTyping();
+  brainStatus.textContent = 'Nova réfléchit…';
+
+  const result = await callOpenRouter(state.history);
+  removeTyping();
+
+  if (result.ok) {
+    addAIMsg(result.text);
+    state.history.push({ role: 'assistant', content: result.text });
+    if (state.history.length > 20) state.history.splice(0, 2);
+    extractMemory(text);
+  } else {
+    addSystemMsg(result.text);
+    state.history.pop();
+  }
+
+  updateBrain();
+  updateStats();
+  state.loading = false;
+  sendBtn.disabled = inputEl.value.trim() === '';
+  msgEl.scrollTop = msgEl.scrollHeight;
+  brainStatus.textContent = state.memory.length > 0 ? `Mémoire : ${state.memory.length} fait(s)` : 'Nova prête';
+}
+
+function quickSend(t) { inputEl.value = t; sendBtn.disabled = false; submitMsg(); }
+
+function resetChat() {
+  if (window.speechSynthesis) window.speechSynthesis.cancel();
+  if (isListening && recognition) recognition.stop();
+  state.history = [];
+  state.turns = 0;
+  msgEl.innerHTML = '';
+  msgEl.appendChild(welcomeEl);
+  welcomeEl.style.display = 'flex';
+  inputEl.value = '';
+  inputEl.style.height = 'auto';
+  sendBtn.disabled = true;
+  updateStats();
+  brainStatus.textContent = state.memory.length > 0
+    ? `Mémoire chargée — ${state.memory.length} fait(s)`
+    : 'Nova prête — Llama 2 7B';
+}
 
 loadState();
 updateStats();
