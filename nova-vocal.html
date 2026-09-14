@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
+<title>Nova — AI</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#fafaf9;--surface:#ffffff;--surface2:#f4f4f5;
+  --text:#1c1917;--text2:#78716c;--text3:#a8a29e;
+  --border:#e7e5e4;--border2:#d6d3d1;
+  --nova:#7c3aed;--nova-light:#ede9fe;--nova-mid:#8b5cf6;
+  --accent:#0ea5e9;--accent-light:#e0f2fe;
+  --danger:#ef4444;--danger-light:#fee2e2;
+  --success:#22c55e;--success-light:#dcfce7;
+  --radius:12px;--radius-sm:8px;
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+
+#topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:0.5px solid var(--border);background:var(--surface);flex-shrink:0;z-index:10}
+#topbar-left{display:flex;align-items:center;gap:10px}
+#nova-logo{width:32px;height:32px;border-radius:50%;background:#cff1f4;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;position:relative;box-shadow:rgba(17,12,46,0.1) 0 8px 30px 0;animation:hueR 8s linear infinite}
+.orb-inner{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;animation:hueRev 6s linear infinite}
+.oc{position:absolute;border-radius:50%}
+.orb-shine{position:absolute;inset:0;border-radius:50%;background:linear-gradient(to bottom,rgba(255,255,255,0.35) 0%,transparent 100%)}
+@keyframes hueR{0%{filter:hue-rotate(0deg)}100%{filter:hue-rotate(360deg)}}
+@keyframes hueRev{0%{filter:blur(5px) hue-rotate(360deg)}100%{filter:blur(5px) hue-rotate(0deg)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@keyframes pulse-ring{0%{transform:scale(1);opacity:1}100%{transform:scale(1.6);opacity:0}}
+
+#nova-name{font-size:16px;font-weight:600;letter-spacing:-0.3px;color:var(--text)}
+#topbar-right{display:flex;gap:6px}
+.icon-btn{width:34px;height:34px;border-radius:50%;border:none;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text2);transition:background 0.15s}
+.icon-btn:hover{background:var(--surface2)}
+.icon-btn svg{width:18px;height:18px}
+
+#brain-bar{background:var(--nova-light);border-bottom:0.5px solid #ddd6fe;padding:6px 16px;display:flex;align-items:center;gap:8px;flex-shrink:0}
+#brain-bar svg{width:14px;height:14px;color:var(--nova);flex-shrink:0}
+#brain-status{font-size:11px;color:#6d28d9;flex:1}
+#brain-progress{height:3px;width:80px;background:#ddd6fe;border-radius:2px;flex-shrink:0}
+#brain-fill{height:100%;border-radius:2px;background:var(--nova);transition:width 0.8s ease;width:0%}
+
+#messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;scroll-behavior:smooth}
+#messages::-webkit-scrollbar{width:3px}
+#messages::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+
+.msg-user{align-self:flex-end;background:var(--nova);color:white;border-radius:18px 18px 4px 18px;padding:10px 14px;max-width:78%;font-size:14px;line-height:1.5;word-break:break-word}
+.msg-user.voice-msg{border:2px solid rgba(255,255,255,0.4)}
+.msg-ai-row{align-self:flex-start;display:flex;gap:8px;max-width:88%;align-items:flex-start}
+.ai-av{width:28px;height:28px;flex-shrink:0;margin-top:2px;border-radius:50%;background:#cff1f4;display:flex;align-items:center;justify-content:center;overflow:hidden;animation:hueR 8s linear infinite}
+.ai-av .orb-inner{animation:hueRev 6s linear infinite}
+.msg-ai-bubble{background:var(--surface);border:0.5px solid var(--border);border-radius:4px 18px 18px 18px;padding:10px 14px;font-size:14px;line-height:1.6;color:var(--text);word-break:break-word}
+.msg-ai-bubble strong{font-weight:500}
+.msg-ai-bubble code{background:var(--surface2);padding:1px 5px;border-radius:4px;font-family:monospace;font-size:12px}
+.msg-system{align-self:center;font-size:11px;color:var(--text3);background:var(--surface2);border-radius:20px;padding:4px 12px;border:0.5px solid var(--border)}
+
+.rating-row{display:flex;gap:6px;margin-top:6px;align-items:center}
+.rate-btn{padding:3px 8px;font-size:11px;border-radius:12px;border:0.5px solid var(--border2);background:transparent;cursor:pointer;color:var(--text2);transition:all 0.15s}
+.rate-btn:hover{background:var(--surface2)}
+.rate-btn.good:hover{background:var(--success-light);color:#15803d;border-color:#86efac}
+.rate-btn.bad:hover{background:var(--danger-light);color:#b91c1c;border-color:#fca5a5}
+.rate-btn.rated-good{background:var(--success-light);color:#15803d;border-color:#86efac}
+.rate-btn.rated-bad{background:var(--danger-light);color:#b91c1c;border-color:#fca5a5}
+.speak-btn{padding:3px 8px;font-size:11px;border-radius:12px;border:0.5px solid var(--border2);background:transparent;cursor:pointer;color:var(--text2);transition:all 0.15s;display:flex;align-items:center;gap:4px}
+.speak-btn:hover{background:var(--accent-light);color:var(--accent);border-color:#7dd3fc}
+.speak-btn.speaking{background:var(--accent-light);color:var(--accent);border-color:#7dd3fc}
+
+@keyframes dot{0%,100%{opacity:0.3}50%{opacity:1}}
+.typing-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--text3);animation:dot 1.2s infinite;margin:0 2px}
+.typing-dot:nth-child(2){animation-delay:0.2s}.typing-dot:nth-child(3){animation-delay:0.4s}
+
+.welcome{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;padding:24px;text-align:center;gap:12px}
+.w-title{font-size:20px;font-weight:600;color:var(--text)}
+.w-sub{font-size:13px;color:var(--text2);max-width:260px;line-height:1.5}
+.pills-grid{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:8px}
+.pill{padding:7px 14px;border-radius:20px;border:0.5px solid var(--border2);background:var(--surface);font-size:12px;color:var(--text2);cursor:pointer;transition:all 0.15s}
+.pill:hover{background:var(--nova-light);border-color:#c4b5fd;color:#6d28d9}
+
+#inputbar{background:var(--surface);border-top:0.5px solid var(--border);padding:10px 12px 12px;flex-shrink:0}
+#input-wrap{background:var(--surface);border:0.5px solid var(--border2);border-radius:20px;overflow:hidden;transition:border-color 0.15s}
+#input-wrap:focus-within{border-color:var(--nova-mid)}
+#input-wrap.recording{border-color:var(--danger);box-shadow:0 0 0 2px rgba(239,68,68,0.15)}
+#msg-input{width:100%;padding:10px 14px 4px;border:none;outline:none;background:transparent;font-size:14px;color:var(--text);resize:none;max-height:100px;overflow-y:auto;font-family:inherit;line-height:1.5}
+#msg-input::placeholder{color:var(--text3)}
+#bar-actions{display:flex;align-items:center;gap:4px;padding:4px 8px 8px}
+.sm-btn{width:30px;height:30px;border-radius:50%;border:none;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text2);transition:background 0.15s}
+.sm-btn:hover{background:var(--surface2)}
+.sm-btn svg{width:15px;height:15px}
+#send-btn{width:30px;height:30px;border-radius:50%;border:none;cursor:pointer;overflow:hidden;margin-left:auto;display:flex;align-items:center;justify-content:center;transition:opacity 0.15s;flex-shrink:0}
+#send-btn:disabled{opacity:0.4;cursor:not-allowed}
+
+/* Bouton micro amélioré */
+#mic-btn{position:relative;width:30px;height:30px;border-radius:50%;border:none;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text2);transition:all 0.2s}
+#mic-btn svg{width:15px;height:15px;position:relative;z-index:1}
+#mic-btn.listening{color:var(--danger);background:var(--danger-light)}
+#mic-btn.listening::before{content:'';position:absolute;inset:0;border-radius:50%;border:2px solid var(--danger);animation:pulse-ring 1.2s ease-out infinite}
+#mic-btn:not(.listening):hover{background:var(--surface2)}
+
+/* Indicateur vocal */
+#voice-indicator{display:none;align-self:center;background:var(--danger-light);border:0.5px solid #fca5a5;border-radius:20px;padding:6px 14px;font-size:12px;color:#b91c1c;gap:8px;align-items:center}
+#voice-indicator.show{display:flex}
+#voice-indicator .dots{display:flex;gap:3px;align-items:center}
+#voice-indicator .dots span{width:4px;height:4px;border-radius:50%;background:#ef4444;animation:dot 1s infinite}
+#voice-indicator .dots span:nth-child(2){animation-delay:0.15s}
+#voice-indicator .dots span:nth-child(3){animation-delay:0.3s}
+
+.overlay{display:none;position:absolute;inset:0;background:rgba(0,0,0,0.4);z-index:50;align-items:center;justify-content:center}
+.overlay.active{display:flex}
+.modal{background:var(--surface);border-radius:16px;padding:24px;width:340px;max-width:90%;border:0.5px solid var(--border2)}
+.modal-title{font-size:16px;font-weight:600;margin-bottom:4px}
+.modal-sub{font-size:12px;color:var(--text2);margin-bottom:16px;line-height:1.4}
+.modal-actions{display:flex;gap:8px;margin-top:4px}
+.btn-primary{flex:1;padding:9px;border-radius:var(--radius-sm);border:none;background:var(--nova);color:white;font-size:14px;font-weight:500;cursor:pointer;transition:background 0.15s}
+.btn-primary:hover{background:var(--nova-mid)}
+.btn-cancel{flex:1;padding:9px;border-radius:var(--radius-sm);border:0.5px solid var(--border2);background:transparent;color:var(--text2);font-size:14px;cursor:pointer;transition:background 0.15s}
+.btn-cancel:hover{background:var(--surface2)}
+
+#stats-bar{display:flex;gap:16px;padding:6px 16px;border-bottom:0.5px solid var(--border);background:var(--surface);font-size:11px;color:var(--text3);flex-shrink:0}
+.stat{display:flex;align-items:center;gap:4px;white-space:nowrap}
+.stat-val{font-weight:500;color:var(--text2)}
+
+#app{display:flex;flex-direction:column;height:100dvh}
+</style>
+</head>
+<body>
+<div id="app">
+
+<div id="topbar">
+  <div id="topbar-left">
+    <div id="nova-logo">
+      <div class="orb-inner" style="animation:hueRev 6s linear infinite">
+        <div class="oc" style="width:14px;height:14px;background:#9e9fef;opacity:0.9;top:30%;left:20%"></div>
+        <div class="oc" style="width:11px;height:11px;background:#c471ec;opacity:0.85;top:50%;right:20%"></div>
+        <div class="oc" style="width:16px;height:16px;background:#9bc761;opacity:0.9;bottom:20%;left:30%"></div>
+        <div class="oc" style="width:8px;height:8px;background:#f472b6;opacity:0.85;bottom:30%;right:25%"></div>
+      </div>
+      <div class="orb-shine"></div>
+    </div>
+    <span id="nova-name">Nova</span>
+  </div>
+  <div id="topbar-right">
+    <button class="icon-btn" onclick="showStats()" title="Stats">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+    </button>
+    <button class="icon-btn" onclick="resetChat()" title="Nouvelle conversation">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+    </button>
+  </div>
+</div>
+
+<div id="brain-bar">
+  <svg viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2"><path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z"/><path d="M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z"/><path d="M15 13a4.5 4.5 0 0 1-3-4 4.5 4.5 0 0 1-3 4"/></svg>
+  <span id="brain-status">Nova prête — Llama 2 7B</span>
+  <div id="brain-progress"><div id="brain-fill"></div></div>
+</div>
+
+<div id="stats-bar" style="display:none">
+  <div class="stat">Échanges <span class="stat-val" id="s-turns">0</span></div>
+  <div class="stat">Corrections <span class="stat-val" id="s-corrections">0</span></div>
+  <div class="stat">Score <span class="stat-val" id="s-score">—</span></div>
+  <div class="stat">Mémoire <span class="stat-val" id="s-mem">0 faits</span></div>
+</div>
+
+<div id="messages">
+  <div class="welcome" id="welcome-screen">
+    <div style="width:60px;height:60px;border-radius:50%;background:#cff1f4;box-shadow:rgba(17,12,46,0.12) 0 20px 60px 0;animation:hueR 8s linear infinite, float 4s ease-in-out infinite;overflow:hidden">
+      <div class="orb-inner" style="animation:hueRev 6s linear infinite">
+        <div class="oc" style="width:27px;height:27px;background:#9e9fef;opacity:0.9;top:15%;left:15%"></div>
+        <div class="oc" style="width:21px;height:21px;background:#c471ec;opacity:0.85;top:45%;right:15%"></div>
+        <div class="oc" style="width:30px;height:30px;background:#9bc761;opacity:0.9;bottom:15%;left:25%"></div>
+        <div class="oc" style="width:15px;height:15px;background:#f472b6;opacity:0.85;bottom:25%;right:20%"></div>
+      </div>
+      <div class="orb-shine"></div>
+    </div>
+    <div class="w-title">Bonjour, je suis Nova</div>
+    <div class="w-sub">Parlez ou écrivez. Je vous réponds à voix haute dans votre langue 🎙️</div>
+    <div class="pills-grid">
+      <span class="pill" onclick="quickSend('Qui es-tu ?')">Qui es-tu ?</span>
+      <span class="pill" onclick="quickSend('Comment tu apprends ?')">Comment tu apprends ?</span>
+      <span class="pill" onclick="quickSend('Explique-moi l\'IA')">Explique l'IA</span>
+      <span class="pill" onclick="quickSend('Écris un poème')">Poème</span>
+    </div>
+  </div>
+  <div id="voice-indicator">
+    <div class="dots"><span></span><span></span><span></span></div>
+    <span id="voice-interim">En écoute…</span>
+    <button onclick="stopRecognition()" style="margin-left:4px;padding:2px 8px;border-radius:10px;border:0.5px solid #fca5a5;background:transparent;color:#b91c1c;font-size:11px;cursor:pointer">Arrêter</button>
+  </div>
+</div>
+
+<div id="inputbar">
+  <div id="input-wrap">
+    <textarea id="msg-input" rows="1" placeholder="Parlez ou écrivez à Nova…"></textarea>
+    <div id="bar-actions">
+      <button id="mic-btn" title="Parler à Nova" onclick="toggleRecognition()">
+        <svg id="mic-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+      </button>
+      <button id="send-btn" disabled title="Envoyer" onclick="submitMsg()">
+        <div style="width:30px;height:30px;border-radius:50%;background:#cff1f4;display:flex;align-items:center;justify-content:center;overflow:hidden;animation:hueR 8s linear infinite">
+          <div class="orb-inner" style="animation:hueRev 6s linear infinite">
+            <div class="oc" style="width:13px;height:13px;background:#9e9fef;opacity:0.9"></div>
+            <div class="oc" style="width:10px;height:10px;background:#c471ec;opacity:0.85;top:55%;right:20%"></div>
+            <div class="oc" style="width:14px;height:14px;background:#9bc761;opacity:0.9;bottom:20%"></div>
+          </div>
+          <div class="orb-shine"></div>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="stats-overlay" onclick="closeStats()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-title" style="margin-bottom:16px">Apprentissage de Nova</div>
+    <div id="stats-detail" style="font-size:13px;color:var(--text2);line-height:1.8"></div>
+    <div style="margin-top:16px"><button class="btn-cancel" style="width:100%" onclick="closeStats()">Fermer</button></div>
+  </div>
+</div>
+
+</div>
+
+<script>
+const msgEl = document.getElementById('messages');
+const inputEl = document.getElementById('msg-input');
+const sendBtn = document.getElementById('send-btn');
+const welcomeEl = document.getElementById('welcome-screen');
+const brainStatus = document.getElementById('brain-status');
+const brainFill = document.getElementById('brain-fill');
+const micBtn = document.getElementById('mic-btn');
+const voiceIndicator = document.getElementById('voice-indicator');
+const voiceInterim = document.getElementById('voice-interim');
+const inputWrap = document.getElementById('input-wrap');
+
+let state = {
+  openrouterKey: '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',
+  history: [],
+  memory: [],
+  corrections: 0,
+  totalRatings: 0,
+  goodRatings: 0,
+  turns: 0,
+  loading: false
+};
+
+/* ─── RECONNAISSANCE VOCALE ─── */
+let recognition = null;
+let isListening = false;
+let currentSpeech = null;
+
+function initRecognition() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) {
+    addSystemMsg('⚠️ La reconnaissance vocale n\'est pas supportée sur ce navigateur. Essayez Chrome.');
+    return null;
+  }
+  const r = new SR();
+  r.continuous = false;
+  r.interimResults = true;
+  r.maxAlternatives = 1;
+  // Langue auto selon le navigateur, avec fallback français
+  r.lang = navigator.language || 'fr-FR';
+
+  r.onstart = () => {
+    isListening = true;
+    micBtn.classList.add('listening');
+    inputWrap.classList.add('recording');
+    voiceIndicator.classList.add('show');
+    voiceInterim.textContent = 'En écoute…';
+    brainStatus.textContent = '🎙️ Je vous écoute…';
+  };
+
+  r.onresult = (e) => {
+    let interim = '';
+    let final = '';
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      const t = e.results[i][0].transcript;
+      if (e.results[i].isFinal) final += t;
+      else interim += t;
+    }
+    // Afficher le texte interim en direct dans le champ
+    if (interim) {
+      inputEl.value = interim;
+      voiceInterim.textContent = interim;
+      sendBtn.disabled = false;
+    }
+    if (final) {
+      inputEl.value = final;
+      voiceInterim.textContent = final;
+      sendBtn.disabled = false;
+    }
+  };
+
+  r.onspeechend = () => { r.stop(); };
+
+  r.onend = () => {
+    isListening = false;
+    micBtn.classList.remove('listening');
+    inputWrap.classList.remove('recording');
+    voiceIndicator.classList.remove('show');
+    brainStatus.textContent = state.memory.length > 0
+      ? `Mémoire chargée — ${state.memory.length} fait(s)`
+      : 'Nova prête — Llama 2 7B';
+    // Si du texte a été capturé, envoyer automatiquement
+    const text = inputEl.value.trim();
+    if (text && !state.loading) {
+      setTimeout(() => submitMsg(true), 300);
+    }
+  };
+
+  r.onerror = (e) => {
+    isListening = false;
+    micBtn.classList.remove('listening');
+    inputWrap.classList.remove('recording');
+    voiceIndicator.classList.remove('show');
+    if (e.error === 'not-allowed') {
+      addSystemMsg('❌ Accès au microphone refusé. Autorisez le micro dans les paramètres du navigateur.');
+    } else if (e.error !== 'no-speech' && e.error !== 'aborted') {
+      addSystemMsg('⚠️ Erreur micro : ' + e.error);
+    }
+    brainStatus.textContent = 'Nova prête';
+  };
+
+  return r;
+}
+
+function toggleRecognition() {
+  if (isListening) {
+    stopRecognition();
+  } else {
+    startRecognition();
+  }
+}
+
+function startRecognition() {
+  // Arrêter toute synthèse en cours
+  if (window.speechSynthesis) window.speechSynthesis.cancel();
+  
+  if (!recognition) recognition = initRecognition();
+  if (!recognition) return;
+  try {
+    recognition.start();
+  } catch(e) {
+    // Si déjà démarré, recréer
+    recognition = initRecognition();
+    recognition && recognition.start();
+  }
+}
+
+function stopRecognition() {
+  if (recognition && isListening) {
+    recognition.stop();
+  }
+}
+
+/* ─── SYNTHÈSE VOCALE ─── */
+function detectLang(text) {
+  // Détection simple de la langue pour la synthèse
+  const frWords = /\b(le|la|les|un|une|des|je|tu|il|nous|vous|ils|est|sont|être|avoir|et|ou|mais|donc|or|ni|car|que|qui|quoi|ce|cet|cette|ces|mon|ton|son|ma|ta|sa|mes|tes|ses|notre|votre|leur|leurs|du|au|aux|en|dans|sur|sous|avec|pour|par|sans|de|à)\b/gi;
+  const enWords = /\b(the|a|an|is|are|was|were|be|been|being|have|has|had|do|does|did|will|would|could|should|may|might|shall|can|i|you|he|she|it|we|they|and|or|but|in|on|at|to|for|of|with|by|from)\b/gi;
+  
+  const frCount = (text.match(frWords) || []).length;
+  const enCount = (text.match(enWords) || []).length;
+  
+  if (frCount > enCount * 1.5) return 'fr-FR';
+  if (enCount > frCount * 1.5) return 'en-US';
+  // Heuristiques supplémentaires
+  if (/[àâäéèêëîïôùûüç]/i.test(text)) return 'fr-FR';
+  if (/\b(hola|como|que|para|por|una|uno|con|del)\b/i.test(text)) return 'es-ES';
+  if (/\b(ich|du|er|sie|wir|ihr|und|ist|war|haben|werden)\b/i.test(text)) return 'de-DE';
+  return navigator.language || 'fr-FR';
+}
+
+function speakText(text, btnEl) {
+  if (!window.speechSynthesis) {
+    addSystemMsg('⚠️ La synthèse vocale n\'est pas supportée.');
+    return;
+  }
+  
+  // Si déjà en train de parler ce texte, arrêter
+  if (btnEl && btnEl.classList.contains('speaking')) {
+    window.speechSynthesis.cancel();
+    btnEl.innerHTML = '🔊 Écouter';
+    btnEl.classList.remove('speaking');
+    return;
+  }
+  
+  // Arrêter toute lecture en cours
+  window.speechSynthesis.cancel();
+  document.querySelectorAll('.speak-btn.speaking').forEach(b => {
+    b.innerHTML = '🔊 Écouter';
+    b.classList.remove('speaking');
+  });
+  
+  // Nettoyer le texte (retirer markdown basique)
+  const clean = text
+    .replace(/\*\*([^*]+)\*\*/g, '$1')
+    .replace(/`([^`]+)`/g, '$1')
+    .replace(/<[^>]+>/g, '')
+    .trim();
+  
+  const lang = detectLang(clean);
+  const utter = new SpeechSynthesisUtterance(clean);
+  utter.lang = lang;
+  utter.rate = 1.0;
+  utter.pitch = 1.0;
+  utter.volume = 1.0;
+  
+  // Choisir une voix adaptée à la langue
+  const voices = window.speechSynthesis.getVoices();
+  const match = voices.find(v => v.lang.startsWith(lang.split('-')[0]) && !v.name.includes('eSpeak'));
+  if (match) utter.voice = match;
+  
+  if (btnEl) {
+    btnEl.innerHTML = '⏹ Arrêter';
+    btnEl.classList.add('speaking');
+    brainStatus.textContent = '🔊 Nova parle…';
+  }
+  
+  utter.onend = () => {
+    if (btnEl) {
+      btnEl.innerHTML = '🔊 Écouter';
+      btnEl.classList.remove('speaking');
+    }
+    brainStatus.textContent = state.memory.length > 0
+      ? `Mémoire chargée — ${state.memory.length} fait(s)`
+      : 'Nova prête';
+  };
+  
+  utter.onerror = () => {
+    if (btnEl) { btnEl.innerHTML = '🔊 Écouter'; btnEl.classList.remove('speaking'); }
+  };
+  
+  window.speechSynthesis.speak(utter);
+  currentSpeech = utter;
+}
+
+// Précharger les voix (nécessaire sur certains navigateurs)
+if (window.speechSynthesis) {
+  window.speechSynthesis.getVoices();
+  window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+}
+
+/* ─── ÉTAT & PERSISTENCE ─── */
+function loadState() {
+  try {
+    const s = localStorage.getItem('nova_state');
+    if (s) {
+      const p = JSON.parse(s);
+      state.memory = p.memory || [];
+      state.corrections = p.corrections || 0;
+      state.totalRatings = p.totalRatings || 0;
+      state.goodRatings = p.goodRatings || 0;
+    }
+  } catch(e){}
+  updateBrain();
+}
+
+function saveState() {
+  try {
+    localStorage.setItem('nova_state', JSON.stringify({
+      memory: state.memory,
+      corrections: state.corrections,
+      totalRatings: state.totalRatings,
+      goodRatings: state.goodRatings
+    }));
+  } catch(e){}
+}
+
+/* ─── INPUT ─── */
+inputEl.addEventListener('input', () => {
+  sendBtn.disabled = inputEl.value.trim() === '' || state.loading;
+  inputEl.style.height = 'auto';
+  inputEl.style.height = Math.min(inputEl.scrollHeight, 100) + 'px';
+});
+
+inputEl.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); if (!sendBtn.disabled) submitMsg(); }
+});
+
+/* ─── SYSTÈME ─── */
+function novaSystemPrompt() {
+  const memStr = state.memory.length > 0
+    ? '\n\nMÉMOIRE (faits appris) :\n' + state.memory.map(m => '- ' + m).join('\n')
+    : '';
+  const corrStr = state.corrections > 0
+    ? `\n\nAPPRENTISSAGE : ${state.corrections} corrections, ${state.goodRatings}/${state.totalRatings} appréciées.`
+    : '';
+  return `Tu es Nova, une IA intelligente et bienveillante. Tu apprends de chaque conversation et mémorises les préférences et infos importantes. Reconnais tes erreurs et indique que tu as appris.
+
+PRINCIPES :
+- Réponds dans la même langue que le message reçu
+- Sois concise mais complète
+- Mémorise les infos pertinentes${memStr}${corrStr}`;
+}
+
+async function callOpenRouter(messages) {
+  if (!state.openrouterKey || state.openrouterKey.length < 10) {
+    const newKey = prompt('Clé API OpenRouter requise (sk-or-v1-...) :');
+    if (!newKey) return { ok: false, text: 'Clé API requise pour continuer.' };
+    state.openrouterKey = newKey;
+    return callOpenRouter(messages);
+  }
+  try {
+    const sysMsg = { role: 'system', content: novaSystemPrompt() };
+    const allMessages = [sysMsg, ...messages.map(m => ({ role: m.role, content: m.content }))];
+    const payload = { model: 'openrouter/free', messages: allMessages, temperature: 0.7, max_tokens: 1000 };
+    const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + state.openrouterKey, 'Content-Type': 'application/json', 'HTTP-Referer': window.location.href },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if (data.error) {
+      if (data.error.message && data.error.message.includes('auth'))
+        return { ok: false, text: '❌ Clé API invalide.' };
+      return { ok: false, text: 'Erreur : ' + (data.error.message || 'Erreur inconnue') };
+    }
+    if (!data.choices || !data.choices[0]) return { ok: false, text: 'Pas de réponse reçue.' };
+    return { ok: true, text: data.choices[0].message.content };
+  } catch(e) {
+    return { ok: false, text: '⚠️ Erreur réseau. Vérifiez votre connexion.' };
+  }
+}
+
+/* ─── MESSAGES ─── */
+function makeOrbAvatar() {
+  const d = document.createElement('div');
+  d.className = 'ai-av';
+  d.innerHTML = `<div class="orb-inner" style="animation:hueRev 6s linear infinite"><div class="oc" style="width:12px;height:12px;background:#9e9fef;opacity:0.9;top:20%;left:15%"></div><div class="oc" style="width:10px;height:10px;background:#c471ec;opacity:0.85;bottom:20%;right:15%"></div><div class="oc" style="width:13px;height:13px;background:#9bc761;opacity:0.9;bottom:25%;left:30%"></div></div><div class="orb-shine"></div>`;
+  return d;
+}
+
+function addUserMsg(text, fromVoice) {
+  welcomeEl.style.display = 'none';
+  const el = document.createElement('div');
+  el.className = 'msg-user' + (fromVoice ? ' voice-msg' : '');
+  el.innerHTML = (fromVoice ? '<span style="font-size:10px;opacity:0.7;display:block;margin-bottom:2px">🎙️ vocal</span>' : '') + escapeHtml(text);
+  // Insérer avant l'indicateur vocal
+  msgEl.insertBefore(el, voiceIndicator);
+  msgEl.scrollTop = msgEl.scrollHeight;
+}
+
+function addAIMsg(text, autoSpeak) {
+  const row = document.createElement('div');
+  row.className = 'msg-ai-row';
+  row.appendChild(makeOrbAvatar());
+  const bubble = document.createElement('div');
+  bubble.className = 'msg-ai-bubble';
+  bubble.innerHTML = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/`([^`]+)`/g,'<code>$1</code>').replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>');
+  const wrap = document.createElement('div');
+  wrap.style.cssText = 'display:flex;flex-direction:column;gap:4px';
+  wrap.appendChild(bubble);
+  const rr = document.createElement('div');
+  rr.className = 'rating-row';
+  // Bouton écouter + boutons notation
+  const speakBtnEl = document.createElement('button');
+  speakBtnEl.className = 'speak-btn';
+  speakBtnEl.innerHTML = '🔊 Écouter';
+  speakBtnEl.onclick = () => speakText(text, speakBtnEl);
+  rr.appendChild(speakBtnEl);
+  rr.innerHTML += `<button class="rate-btn good" onclick="rateMsg(this,'good')">👍</button><button class="rate-btn bad" onclick="rateMsg(this,'bad')">👎</button>`;
+  rr.insertBefore(speakBtnEl, rr.firstChild);
+  wrap.appendChild(rr);
+  row.appendChild(wrap);
+  msgEl.insertBefore(row, voiceIndicator);
+  msgEl.scrollTop = msgEl.scrollHeight;
+  
+  // Lecture auto si la question venait de la voix
+  if (autoSpeak) {
+    setTimeout(() => speakText(text, speakBtnEl), 400);
+  }
+}
+
+function escapeHtml(t) { return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function addTyping() {
+  const row = document.createElement('div');
+  row.className = 'msg-ai-row';
+  row.id = 'typing-row';
+  row.appendChild(makeOrbAvatar());
+  const bubble = document.createElement('div');
+  bubble.className = 'msg-ai-bubble';
+  bubble.innerHTML = '<span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span>';
+  row.appendChild(bubble);
+  msgEl.insertBefore(row, voiceIndicator);
+  msgEl.scrollTop = msgEl.scrollHeight;
+}
+
+function removeTyping() { const t = document.getElementById('typing-row'); if(t) t.remove(); }
+
+function addSystemMsg(text) {
+  const el = document.createElement('div');
+  el.className = 'msg-system';
+  el.textContent = text;
+  msgEl.insertBefore(el, voiceIndicator);
+  msgEl.scrollTop = msgEl.scrollHeight;
+}
+
+/* ─── NOTATION ─── */
+function rateMsg(btn, type) {
+  const rr = btn.closest('.rating-row');
+  if (rr.dataset.rated) return;
+  rr.dataset.rated = '1';
+  state.totalRatings++;
+  if (type === 'good') {
+    state.goodRatings++;
+    btn.classList.add('rated-good');
+    rr.querySelectorAll('.rate-btn.bad').forEach(b => b.style.display='none');
+    updateBrain();
+    brainStatus.textContent = 'Retour positif enregistré ✓';
+  } else {
+    btn.classList.add('rated-bad');
+    rr.querySelectorAll('.rate-btn.good').forEach(b => b.style.display='none');
+    state.corrections++;
+    addCorrectionFlow(rr);
+  }
+  saveState();
+  updateStats();
+}
+
+function addCorrectionFlow(rr) {
+  const wrap = rr.parentElement;
+  const corrDiv = document.createElement('div');
+  corrDiv.style.cssText = 'display:flex;gap:6px;align-items:center;margin-top:4px';
+  const inp = document.createElement('input');
+  inp.type = 'text';
+  inp.placeholder = 'Quelle était la bonne réponse ?';
+  inp.style.cssText = 'flex:1;padding:6px 10px;border:0.5px solid var(--border2);border-radius:8px;font-size:12px;color:var(--text);background:var(--surface2);outline:none;font-family:inherit';
+  const okBtn = document.createElement('button');
+  okBtn.style.cssText = 'padding:6px 12px;border-radius:8px;border:none;background:var(--nova);color:white;font-size:12px;cursor:pointer;white-space:nowrap';
+  okBtn.textContent = 'Apprendre';
+  okBtn.onclick = () => {
+    const val = inp.value.trim();
+    if (!val) return;
+    state.memory.push('Correction : ' + val);
+    if (state.memory.length > 40) state.memory.shift();
+    saveState();
+    corrDiv.remove();
+    addSystemMsg('Nova a appris ✓');
+    updateBrain();
+  };
+  corrDiv.appendChild(inp);
+  corrDiv.appendChild(okBtn);
+  wrap.appendChild(corrDiv);
+}
+
+async function extractMemory(userMsg) {
+  if (/je m'appelle|mon nom est|j'aime|j'adore|je préfère|mon favori/i.test(userMsg)) {
+    const fact = 'Utilisateur : ' + userMsg.slice(0,80);
+    if (!state.memory.includes(fact)) state.memory.push(fact);
+    if (state.memory.length > 40) state.memory.shift();
+    saveState();
+    updateBrain();
+  }
+}
+
+function updateBrain() {
+  const total = state.memory.length + state.corrections;
+  const pct = Math.min(100, Math.round(total * 2.5));
+  brainFill.style.width = pct + '%';
+}
+
+function updateStats() {
+  document.getElementById('s-turns').textContent = state.turns;
+  document.getElementById('s-corrections').textContent = state.corrections;
+  const score = state.totalRatings > 0 ? Math.round(state.goodRatings / state.totalRatings * 100) + '%' : '—';
+  document.getElementById('s-score').textContent = score;
+  document.getElementById('s-mem').textContent = state.memory.length + ' faits';
+}
+
+/* ─── ENVOI ─── */
+async function submitMsg(fromVoice) {
+  const text = inputEl.value.trim();
+  if (!text || state.loading) return;
+
+  state.loading = true;
+  sendBtn.disabled = true;
+  inputEl.value = '';
+  inputEl.style.height = 'auto';
+
+  addUserMsg(text, fromVoice);
+  state.history.push({ role: 'user', content: text });
+  state.turns++;
+  addTyping();
+  brainStatus.textContent = 'Nova réfléchit…';
+
+  const result = await callOpenRouter(state.history);
+  removeTyping();
+
+  if (result.ok) {
+    addAIMsg(result.text, !!fromVoice); // lecture auto si question vocale
+    state.history.push({ role: 'assistant', content: result.text });
+    if (state.history.length > 20) state.history.splice(0, 2);
+    extractMemory(text);
+  } else {
+    addSystemMsg(result.text);
+    state.history.pop();
+  }
+
+  updateBrain();
+  updateStats();
+  state.loading = false;
+  sendBtn.disabled = inputEl.value.trim() === '';
+  msgEl.scrollTop = msgEl.scrollHeight;
+}
+
+function quickSend(t) { inputEl.value = t; sendBtn.disabled = false; submitMsg(); }
+
+function resetChat() {
+  if (window.speechSynthesis) window.speechSynthesis.cancel();
+  state.history = [];
+  state.turns = 0;
+  // Reconstruire le DOM messages
+  while (msgEl.firstChild) msgEl.removeChild(msgEl.firstChild);
+  msgEl.appendChild(welcomeEl);
+  msgEl.appendChild(voiceIndicator);
+  welcomeEl.style.display = 'flex';
+  inputEl.value = '';
+  inputEl.style.height = 'auto';
+  sendBtn.disabled = true;
+  updateStats();
+  brainStatus.textContent = state.memory.length > 0
+    ? `Mémoire chargée — ${state.memory.length} fait(s)`
+    : 'Nova prête — Llama 2 7B';
+}
+
+function showStats() {
+  const score = state.totalRatings > 0 ? Math.round(state.goodRatings / state.totalRatings * 100) + '%' : 'N/A';
+  document.getElementById('stats-detail').innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+      <div style="background:var(--surface2);border-radius:8px;padding:12px;text-align:center"><div style="font-size:11px;color:var(--text3);margin-bottom:4px">Échanges</div><div style="font-size:22px;font-weight:600;color:var(--nova)">${state.turns}</div></div>
+      <div style="background:var(--surface2);border-radius:8px;padding:12px;text-align:center"><div style="font-size:11px;color:var(--text3);margin-bottom:4px">Corrections</div><div style="font-size:22px;font-weight:600;color:var(--nova)">${state.corrections}</div></div>
+      <div style="background:var(--surface2);border-radius:8px;padding:12px;text-align:center"><div style="font-size:11px;color:var(--text3);margin-bottom:4px">Qualité</div><div style="font-size:22px;font-weight:600;color:var(--nova)">${score}</div></div>
+      <div style="background:var(--surface2);border-radius:8px;padding:12px;text-align:center"><div style="font-size:11px;color:var(--text3);margin-bottom:4px">Mémoire</div><div style="font-size:22px;font-weight:600;color:var(--nova)">${state.memory.length}</div></div>
+    </div>
+    ${state.memory.length > 0 ? '<div style="font-size:11px;color:var(--text3);margin-bottom:6px;font-weight:500">FAITS MÉMORISÉS</div>' + state.memory.slice(-8).map(m => `<div style="padding:4px 0;border-bottom:0.5px solid var(--border);font-size:12px">• ${m}</div>`).join('') : '<div style="color:var(--text3);font-size:12px;text-align:center;padding:16px">Aucun fait mémorisé.</div>'}
+  `;
+  document.getElementById('stats-overlay').classList.add('active');
+}
+
+function closeStats() { document.getElementById('stats-overlay').classList.remove('active'); }
+
+loadState();
+updateStats();
+</script>
+</body>
+</html>
